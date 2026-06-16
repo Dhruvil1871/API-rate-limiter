@@ -1,3 +1,5 @@
+#reconstruct bucket state according how many tokens should be refilled after last request
+
 import time
 from limiter.utils.redis_client import redis_client
 

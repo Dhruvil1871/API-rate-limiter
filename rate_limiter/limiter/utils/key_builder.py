@@ -1,6 +1,7 @@
-def buid_rate_limit_key(request):
+#create unique redis key based on the caller
+def build_rate_limit_key(request):
     
-    if request.user.is_authenticated:
+    if hasattr(request, "user") and request.user.is_authenticated:
         identifier = f"user_{request.user.id}"
     elif request.headers.get("X-API-Key"):
         identifier = f"api_{request.headers.get('X-API-Key')}"

@@ -6,8 +6,10 @@ class FixedWindowRateLimiter:
         self.window_size = window_size
 
     def is_allowed(self, key):
+        #incr() used for incrementing as per every request (only one at a time for atomic operation)
         current_count = redis_client.incr(key)
 
+        #start the window timer when first request is encountered in new window
         if current_count  == 1:
             redis_client.expire(key, self.window_size)
 

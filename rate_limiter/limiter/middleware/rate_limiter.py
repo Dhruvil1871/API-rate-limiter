@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from limiter.services.token_bucket import TokenBucketRateLimiter
-from limiter.utils.key_builder import buid_rate_limit_key
-from  limiter.config import RATE_LIMITS
+from limiter.utils.key_builder import build_rate_limit_key
+from limiter.config import RATE_LIMITS, PLAN_LIMITS
+from limiter.utils.resolve_limits import resolve_limits
 
 class RateLimitMiddleware:
     
@@ -11,23 +12,39 @@ class RateLimitMiddleware:
     def __call__(self, request):
         #configure path
         path = request.path
-        config = RATE_LIMITS.get(
+
+        # Load rate limit policy for the requested endpoint.
+        route_config = RATE_LIMITS.get(
             path,
             {"capacity" : 10 , "refill_rate" : 1}
         )
 
-        #create limiter dynamically
-        self.limiter = TokenBucketRateLimiter(
-            capacity=config["capacity"], 
-            refill_rate=config["refill_rate"]
+        plan = request.headers.get("X-plan", "free")
+        
+        # Determine the caller's subscription tier.
+        # Defaults to free when no plan is provided.
+        plan_config = PLAN_LIMITS.get(
+            plan, 
+            PLAN_LIMITS["free"]
         )
 
-        #build key
-        key = buid_rate_limit_key(request)
+        # Resolve the effective limits after applying
+        # both route-specific and plan-specific policies.
+        limits = resolve_limits(route_config, plan_config)       
+
+        #create limiter dynamically
+        self.limiter = TokenBucketRateLimiter(
+            capacity=limits["capacity"], 
+            refill_rate=limits["refill_rate"]
+        )
+
+        #Build a unique identifier so each user/IP and route
+        key = build_rate_limit_key(request)
 
         #apply limiter
-        result = self.limiter.is_allowed(key)
+        result = self.limiter.is_allowed(key) 
 
+        # Reject requests that exceed the configured limit.
         if not result["allowed"]:
             return JsonResponse(
                 {

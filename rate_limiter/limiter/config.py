@@ -7,5 +7,5 @@ RATE_LIMITS = {
 PLAN_LIMITS = {
     "free" : {"capacity": 10, "refill_rate" : 1},
     "premium":{"capacity": 50, "refill_rate" : 10},
-    "admin":{"override" : True},
+    "admin":{"override" : True, "capacity": 100000, "refill_rate": 10000},
 }
