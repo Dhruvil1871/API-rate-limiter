@@ -1,9 +1,9 @@
 from django.http import JsonResponse
 from limiter.services.token_bucket import TokenBucketRateLimiter
 from limiter.utils.key_builder import build_rate_limit_key
-from limiter.config import RATE_LIMITS, PLAN_LIMITS
+from limiter.config import RATE_LIMITER,RATE_LIMITS, PLAN_LIMITS
 from limiter.utils.resolve_limits import resolve_limits
-
+from limiter.utils.limiter_factory import build_limiter
 class RateLimitMiddleware:
     
     def __init__(self, get_response):
@@ -33,16 +33,16 @@ class RateLimitMiddleware:
         limits = resolve_limits(route_config, plan_config)       
 
         #create limiter dynamically
-        self.limiter = TokenBucketRateLimiter(
-            capacity=limits["capacity"], 
-            refill_rate=limits["refill_rate"]
+        limiter = build_limiter(
+            RATE_LIMITER,
+            limits
         )
 
         #Build a unique identifier so each user/IP and route
         key = build_rate_limit_key(request)
 
         #apply limiter
-        result = self.limiter.is_allowed(key) 
+        result = limiter.is_allowed(key) 
 
         # Reject requests that exceed the configured limit.
         if not result["allowed"]:
