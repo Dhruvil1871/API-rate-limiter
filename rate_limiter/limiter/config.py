@@ -1,5 +1,8 @@
 RATE_LIMITER = "token_bucket"
 
+REDIS_RETRY_AFTER = 30
+
+
 RATE_LIMITS = {
     "/":{"capacity": 10, "refill_rate" : 1},
     "/api/login":{"capacity": 5, "refill_rate" : 0.2},
