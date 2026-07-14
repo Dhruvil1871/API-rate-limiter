@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Limiter Dashboard</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'limiter/css/dashboard.css' %}">
+</head>
+<body>
+
+    <header>
+        <h1>Dashboard</h1>
+    </header>
+
+    <main>
+
+        <!-- ===================== -->
+        <!-- System Health         -->
+        <!-- ===================== -->
+        <section id="health-section">
+
+            <h2>System Health</h2>
+
+            <div class="health-status">
+                <span id="status" class="status-green">
+                    HEALTHY
+                </span>
+
+            </div>
+
+            <div class="health-details">
+
+                <div class="info-row">
+                    <span>Redis</span>
+                    <span id="redis-status">ONLINE</span>
+                </div>
+
+                <div class="info-row">
+                    <span>Fallback</span>
+                    <span id="fallback-status">DISABLED</span>
+                </div>
+
+                <div class="info-row">
+                    <span>Limiter</span>
+                    <span id="active-limiter">REDIS</span>
+                </div>
+
+                <div class="info-row">
+                    <span>Algorithm</span>
+                    <span id="algorithm">TOKEN BUCKET</span>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ===================== -->
+        <!-- Statistics            -->
+        <!-- ===================== -->
+        <section id="stats-section">
+
+            <h2>Request Statistics</h2>
+
+            <div class="stats-content">
+
+                <div class="stats-list">
+
+                    <div class="info-row">
+                        <span>Total Requests</span>
+                        <span id="total-requests">Loading...</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Allowed Requests</span>
+                        <span id="allowed-requests">Loading...</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span>Blocked Requests</span>
+                        <span id="blocked-requests">Loading...</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span>Redis Requests</span>
+                        <span id="redis-requests">Loading...</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span>Memory Requests</span>
+                        <span id="memory-requests">Loading...</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span>Uptime</span>
+                        <span id="uptime">--</span>
+                    </div>
+
+                </div>
+
+                <div class="traffic-panel">
+
+                    <div class="traffic-header">
+                            Last 100 Requests
+                    </div>
+
+                    <div id="traffic-grid"></div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <section id="endpoints-section">
+            <h2>Endpoint Distribution</h2>
+            
+            <div id="endpoint-container">
+                <p>Loading...</p>
+            </div>
+        </section>
+
+        <!-- ===================== -->
+        <!-- Recent Events         -->
+        <!-- ===================== -->
+        <section id="events-section">
+
+            <h2>Recent Events</h2>
+
+            <div id="events-container">
+
+                <p></p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="{% static 'limiter/js/dashboard.js' %}"></script>
+
+</body>
+</html>
