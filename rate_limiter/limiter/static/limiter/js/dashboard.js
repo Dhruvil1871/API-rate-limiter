@@ -200,6 +200,41 @@ async function loadEvents() {
     }
 }
 
+async function loadConfig() {
+    const response = await fetch("/api/rate-limit/config/");
+    const data = await response.json();
+
+    const container = document.getElementById("config-container");
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th> Routes </th>
+                    <th> Capacity </th>
+                    <th> Refill Rate </th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for(const [route, config] of Object.entries(data.routes)){
+        html +=  `
+        <tr>
+            <td> ${route} </td>
+            <td> ${config.capacity} </td>
+            <td> ${config.refill_rate} </td>
+        `;
+    }
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = html;
+}
+
 async function refreshDashboard() {
     await loadHealth();
     
@@ -210,6 +245,7 @@ async function refreshDashboard() {
     loadEndpoints(stats);
     loadTraffic(stats);
     await loadEvents();
+    await loadConfig();
 }
 
 refreshDashboard();

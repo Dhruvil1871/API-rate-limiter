@@ -21,6 +21,5 @@ from limiter.views import dashboard_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/rate-limit/', include("limiter.urls")),
-    path("dashboard/", dashboard_view, name="dashboard")
-
+    path("dashboard/", dashboard_view, name="dashboard"),
 ]

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from limiter.services.stats import rate_limit_stats
 from limiter.services.events import event_manager
-from limiter.config import RATE_LIMITER
+from limiter.config import RATE_LIMITER, RATE_LIMITS
 
 # Create your views here.
 def stats_view(request):
@@ -29,3 +29,11 @@ def event_view(request):
 
 def dashboard_view(request):
     return render(request, "limiter/dashboard.html")
+
+def config_view(request):
+    return JsonResponse({
+        "routes" : RATE_LIMITS
+    })
+
+def save_config_view(request):
+    pass

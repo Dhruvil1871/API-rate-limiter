@@ -17,6 +17,7 @@ MONITORING_ENDPOINTS = {
     "/api/rate-limit/health",
     "/api/rate-limit/stats/",
     "/api/rate-limit/events/",
+    "/api/rate-limit/config/",
     "/favicon.ico",
 }
 
