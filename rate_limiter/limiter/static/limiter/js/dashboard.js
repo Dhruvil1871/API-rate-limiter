@@ -2,6 +2,27 @@
 
 let lastEventCount = 0;
 
+function getCookie(name){
+    let cookieValue = null;
+
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(
+                    cookie.substring(name.length + 1)
+                );
+                break;
+            }
+        }
+    }
+
+    return cookieValue;
+}
+
 function setStatus(elementId, text, className){
     const element = document.getElementById(elementId);
 
@@ -213,6 +234,7 @@ async function loadConfig() {
                     <th> Routes </th>
                     <th> Capacity </th>
                     <th> Refill Rate </th>
+                    <th> Action </th>
                 </tr>
             </thead>
             <tbody>
@@ -222,8 +244,28 @@ async function loadConfig() {
         html +=  `
         <tr>
             <td> ${route} </td>
-            <td> ${config.capacity} </td>
-            <td> ${config.refill_rate} </td>
+            <td>
+                <input
+                    type="number"
+                    class="capacity-input"
+                    data-route="${route}"
+                    value="${config.capacity}"
+                    min="1"
+                >
+            </td>
+            <td>
+                <input
+                    type="number"
+                    class="refill-input"
+                    data-route="${route}"
+                    value="${config.refill_rate}"
+                    step="0.1"
+                    min="0.1"
+                >
+            </td>
+            <td> 
+                <button onclick="saveConfig('${route}')"> save </button>
+            </td> 
         `;
     }
 
@@ -233,6 +275,38 @@ async function loadConfig() {
     `;
 
     container.innerHTML = html;
+}
+
+async function saveConfig(route) {
+    const capacity = document.querySelector(
+        `.capacity-input[data-route="${route}"]`
+    ).value;
+
+    const refillRate = document.querySelector(
+        `.refill-input[data-route="${route}"]`
+    ).value;
+
+    const response = await fetch("/api/rate-limit/config/update/",{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify({
+            route,
+            capacity,
+            refill_rate: refillRate,
+        }),
+    })
+
+    const result = await response.json();
+
+    if(result.success){
+        await loadConfig();
+    }
+    else{
+        alert(result.error);
+    }
 }
 
 async function refreshDashboard() {
@@ -245,9 +319,9 @@ async function refreshDashboard() {
     loadEndpoints(stats);
     loadTraffic(stats);
     await loadEvents();
-    await loadConfig();
 }
 
+loadConfig();
 refreshDashboard();
 
 setInterval(refreshDashboard, 2000);

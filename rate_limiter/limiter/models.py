@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 ALGORITHM_CHOICES = [
-    ("token", "tocken_bucket"),
-    ("fixed", "fixed_window"),
+    ("token_bucket", "Token Bucket"),
+    ("fixed_window", "Fixed Window"),
 ]
 
 class RouteLimit(models.Model):
@@ -11,9 +11,9 @@ class RouteLimit(models.Model):
     capacity = models.PositiveIntegerField(default=10)
     refill_rate = models.FloatField(default=1)
     algorithm = models.CharField(
-        max_length=10,
+        max_length=20,
         choices= ALGORITHM_CHOICES,
-        default= "token",
+        default= "token_bucket",
     )
 
     enabled = models.BooleanField(default= True)

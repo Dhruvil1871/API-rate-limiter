@@ -6,12 +6,14 @@ from limiter.services.stats import rate_limit_stats
 from limiter.services.events import event_manager, EventType
 from limiter.utils.key_builder import build_rate_limit_key
 from limiter.config import REDIS_RETRY_AFTER,RATE_LIMITER,RATE_LIMITS, PLAN_LIMITS
+from limiter.utils.config_loader import get_route_config
 from limiter.utils.resolve_limits import resolve_limits
 from limiter.utils.limiter_factory import build_limiter
 
 logger = logging.getLogger(__name__)
 
 MONITORING_ENDPOINTS = {
+    "/admin/",
     "/dashboard/",
     "/api/rate-limit/health/",
     "/api/rate-limit/health",
@@ -41,11 +43,8 @@ class RateLimitMiddleware:
         rate_limit_stats.increment_endpoint(path)
 
         # Load rate limit policy for the requested endpoint.
-        route_config = RATE_LIMITS.get(
-            path,
-            {"capacity" : 10 , "refill_rate" : 1}
-        )
-
+        route_config = get_route_config(path)
+        
         plan = request.headers.get("X-plan", "free")
         
         # Determine the caller's subscription tier.
@@ -61,7 +60,7 @@ class RateLimitMiddleware:
 
         #create limiter dynamically
         limiter = build_limiter(
-            RATE_LIMITER,
+            route_config["algorithm"],
             limits
         )
 
