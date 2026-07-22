@@ -234,6 +234,7 @@ async function loadConfig() {
                     <th> Routes </th>
                     <th> Capacity </th>
                     <th> Refill Rate </th>
+                    <th> algorithm </th>
                     <th> Action </th>
                 </tr>
             </thead>
@@ -263,8 +264,25 @@ async function loadConfig() {
                     min="0.1"
                 >
             </td>
+            <td>
+                <select class="algorithm-select" data-route="${route}">
+                    <option
+                        value="token_bucket"
+                        ${config.algorithm === "token_bucket" ? "selected" : ""}
+                    >
+                        Token Bucket
+                    </option>
+
+                    <option
+                        value="fixed_window"
+                        ${config.algorithm === "fixed_window" ? "selected" : ""}
+                    >
+                        Fixed Window
+                    </option>
+                </select>
+            </td>
             <td> 
-                <button onclick="saveConfig('${route}')"> save </button>
+                <button class="save-btn" onclick="saveConfig('${route}')"> save </button>
             </td> 
         `;
     }
@@ -286,6 +304,10 @@ async function saveConfig(route) {
         `.refill-input[data-route="${route}"]`
     ).value;
 
+    const algorithm = document.querySelector(
+        `.algorithm-select[data-route="${route}"]`
+    ).value;
+
     const response = await fetch("/api/rate-limit/config/update/",{
         method: "POST",
         headers: {
@@ -296,6 +318,7 @@ async function saveConfig(route) {
             route,
             capacity,
             refill_rate: refillRate,
+            algorithm,
         }),
     })
 
@@ -325,3 +348,18 @@ loadConfig();
 refreshDashboard();
 
 setInterval(refreshDashboard, 2000);
+
+const overlay = document.getElementById("config-overlay");
+
+document
+.getElementById("config-btn")
+.addEventListener("click", async ()=>{
+    await loadConfig();
+    overlay.classList.add("active");
+});
+
+document
+.getElementById("close-config")
+.addEventListener("click", ()=>{
+    overlay.classList.remove("active");
+});

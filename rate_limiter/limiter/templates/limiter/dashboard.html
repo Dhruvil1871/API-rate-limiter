@@ -14,6 +14,12 @@
         <h1>Dashboard</h1>
     </header>
 
+    <div class="config-header">
+        <button id="config-btn">
+            ⚙ Configure
+        </button>
+    </div>
+
     <main>
 
         <!-- ===================== -->
@@ -137,12 +143,25 @@
         <!-- ===================== -->
         <!-- Configuration         -->
         <!-- ===================== -->
-        <h2>Configuration</h2>
 
-        <div id="config-container">
-            Loading configuration...
+        <div id="config-overlay" class="config-overlay">
+            <div id="config-panel" class="config-panel">
+                <div class="config-panel-header">
+                    <h2>Configuration</h2>
+                    <button id="close-config">
+                        ✕
+                    </button>
+                </div>
+
+                <div id="config-container"></div>
+
+                <div class="config-footer">
+                    <button id="save-all-btn">
+                        Save All Changes
+                    </button>
+                </div>
+            </div>
         </div>
-
     </main>
 
     <script src="{% static 'limiter/js/dashboard.js' %}"></script>

@@ -52,13 +52,15 @@ def update_config_view(request):
         data = json.loads(request.body)
 
         route = data["route"]
+        algorithm = data["algorithm"]
 
         config = RouteLimit.objects.get(route = route)
 
         config.capacity = int(data["capacity"])
         config.refill_rate = float(data["refill_rate"])
+        config.algorithm = algorithm
         config.save()
-
+        
         return JsonResponse({"success" : True})
     
     except RouteLimit.DoesNotExist:
